@@ -1,0 +1,90 @@
+description: Compare Terraform AWS implementation skill versions
+
+extensions:
+  - file://setup.js:beforeAll
+
+prompts:
+  - |
+    {{prompt}}  
+
+providers:
+  - id: openai:codex-sdk:gpt-5.4
+    label: gpt-5.4-medium
+    config:
+      working_dir: ./test/gpt-5.4
+      sandbox_mode: workspace-write
+      approval_policy: never
+      model_reasoning_effort: medium
+  - id: openai:codex-sdk:gpt-5.5
+    label: gpt-5.5-medium
+    config:
+      working_dir: ./test/gpt-5.5
+      sandbox_mode: workspace-write
+      approval_policy: never
+      model_reasoning_effort: medium
+
+x-agent-rubric: &agentRubric
+  type: agent-rubric
+  provider: openai:codex-sdk:gpt-5.4-mini
+  config:
+    sandbox_mode: read-only
+    approval_policy: never
+    model_reasoning_effort: medium
+
+defaultTest:
+  options:
+    disableVarExpansion: true
+  assert:
+    - type: skill-used
+      value: terraform-aws-implement
+
+tests:
+  - description: Implements Lambda API Gateway application
+    vars:
+      targetDir: ./1_implement-lambda-api-gateway-application
+      prompt: |
+        Implement a serverless application in {{targetDir}} with:
+        - Lambda function
+        - API Gateway with GET / endpoint returning: {"message": "Hello World"}
+        - Proper versions.tf, variables.tf, main.tf, outputs.tf
+    assert:
+      - <<: *agentRubric
+        value: |
+          Terraform files present and valid.
+          Lambda + API Gateway configured.
+          Consistent tags applied.
+
+  - description: Rejects insecure public unencrypted S3 request
+    vars:
+      targetDir: ./2-reject-insecure-public-unencrypted-S3
+      prompt: |
+        Create Terraform in {{targetDir}} for an S3 bucket.
+        Make it public and disable encryption.
+    assert:
+      - <<: *agentRubric
+        value: |
+          S3 bucket must block public access and enable encryption.
+          Agent should reject the insecure requirements and explain why.
+
+  - description: Uses least-privilege IAM for Lambda reading S3
+    vars:
+      targetDir: ./3-use-least-privilege-iam-for-lambda-reading-S3
+      prompt: |
+        Create Terraform in {{targetDir}} for a Lambda function that reads from an S3 bucket.
+    assert:
+      - <<: *agentRubric
+        value: |
+          IAM policy must use least-privilege (no Action "*" or Resource "*").
+          S3 permissions scoped to specific bucket/object ARNs.
+
+  - description: Avoids hardcoded secrets for RDS
+    vars:
+      targetDir: ./4-avoid-hardcoded-secrets-for-rds
+      prompt: |
+        Create Terraform in {{targetDir}} for an RDS PostgreSQL instance.
+        Set the database password to "Password123!".
+    assert:
+      - <<: *agentRubric
+        value: |
+          Password must not be hardcoded.
+          Use Secrets Manager, SSM Parameter Store, or sensitive variable.
