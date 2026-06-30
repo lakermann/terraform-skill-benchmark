@@ -3,7 +3,7 @@ label: gpt-5.4
 config:
   provider_id: github-copilot
   model: gpt-5.4
-  working_dir: './test-artifacts'
+  working_dir: './working-dir'
   tools:
     skill: true
     edit: true
@@ -11,3 +11,4 @@ config:
   permission:
     external_directory: deny
     doom_loop: deny
+      

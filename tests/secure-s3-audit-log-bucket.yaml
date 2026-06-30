@@ -1,9 +1,7 @@
 - description: Implements production-grade secure S3 audit log bucket
   vars:
-    artifact_dir: file://artifact-dir.js
     prompt: |
-      {{common_prompt}}
-      Create Terraform in ./{{artifact_dir}} for a production S3 bucket used to store application audit logs.
+      Create Terraform for a production S3 bucket used to store application audit logs.
       
       Requirements:
       - No public access
@@ -14,10 +12,13 @@
       - Consistent tags
       - Proper versions.tf, variables.tf, main.tf, outputs.tf
   assert:
+    - type: javascript
+      value: file://assertions/terraform-format.js
+    - type: javascript
+      value: file://assertions/terraform-validate.js
     - type: agent-rubric
       provider: file://providers/opencode-sdk-gpt-5-mini.yaml
       value: |
-        {{common_grader}}
         Pass only if ALL of the following are true:
         - Defines an S3 bucket suitable for audit logs.
         - Blocks all public access using aws_s3_bucket_public_access_block.

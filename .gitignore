@@ -1,5 +1,8 @@
 .idea
 node_modules
 
-test-artifacts/**
-!test-artifacts/.gitkeep
+test-runs/**
+!test-runs/.gitkeep
+
+working-dir/**
+!working-dir/.gitkeep

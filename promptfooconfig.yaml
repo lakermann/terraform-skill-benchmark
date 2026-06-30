@@ -1,7 +1,8 @@
 description: Evaluate Terraform AWS implementation quality across multiple models using an included skill
 
 extensions:
-  - file://setup.js:beforeAll
+  - file://setup.js:beforeEach
+  - file://setup.js:afterEach
 
 prompts:
   - |
@@ -10,15 +11,17 @@ prompts:
 providers:
   - file://providers/opencode-sdk-gpt-5-4.yaml
   - file://providers/opencode-sdk-gpt-5-5.yaml
+#  - file://providers/opencode-sdk-ollama-gemma4-26b.yaml
 
 evaluateOptions:
   cache: false
   repeat: 1
+    
+  # Prevent Promptfoo from grouping model-graded assertions by provider.
+  # We rely on beforeEach/afterEach to manage a shared working directory, so
+  # each evaluation must complete before the next one begins.
+  maxConcurrency: 1
+  timeoutMs: 600000
   
-defaultTest:
-  vars:
-    common_prompt: file://shared/common-prompt.txt
-    common_grader: file://shared/common-grader.txt
-
 tests:
   - file://tests/*.yaml

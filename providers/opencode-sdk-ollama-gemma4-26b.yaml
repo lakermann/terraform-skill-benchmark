@@ -1,8 +1,8 @@
 id: opencode:sdk
-label: gpt-5.5
+label: gemma4-26b-ollama
 config:
-  provider_id: github-copilot
-  model: gpt-5.5
+  provider_id: ollama
+  model: gemma4:26b
   working_dir: './working-dir'
   tools:
     skill: true

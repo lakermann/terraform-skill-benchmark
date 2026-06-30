@@ -1,10 +1,8 @@
 - description: Implements minimal Lambda API Gateway application
   vars:
-    artifact_dir: file://artifact-dir.js
     prompt: |
-      {{common_prompt}}
-      Create Terraform for a serverless application in ./{{artifact_dir}} with:
-      - Lambda function
+      Create Terraform for a serverless application with:
+      - Lambda function implemented with Node.js
       - API Gateway HTTP API with GET / endpoint
       - Lambda response body: {"message": "Hello World"}
       - CloudWatch log group with retention
@@ -12,10 +10,13 @@
       - Consistent tags
       - Proper versions.tf, variables.tf, main.tf, outputs.tf
   assert:
+    - type: javascript
+      value: file://assertions/terraform-format.js
+    - type: javascript
+      value: file://assertions/terraform-validate.js
     - type: agent-rubric
       provider: file://providers/opencode-sdk-gpt-5-mini.yaml
       value: |
-        {{common_grader}}
         Pass only if ALL of the following are true:
         - Defines a Lambda function.
         - Defines an API Gateway HTTP API or REST API with GET / route.
